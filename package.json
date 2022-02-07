@@ -1,0 +1,13 @@
+{
+  "name": "notion-schedule",
+  "version": "0.0.1",
+  "description": "scheduling my notion tings",
+  "main": "index.js",
+  "repository": "https://github.com/XanderJL/notion-schedule.git",
+  "author": "Xander Low <alexanderjameslow@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@netlify/functions": "^0.11.0",
+    "@notionhq/client": "^0.4.13"
+  }
+}

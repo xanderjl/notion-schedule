@@ -1,0 +1,1 @@
+module.exports = require('./src/functions/weekly-1-on-1.js')
