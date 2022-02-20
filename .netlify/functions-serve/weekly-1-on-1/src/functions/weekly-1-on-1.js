@@ -3686,18 +3686,32 @@ __export(exports, {
 });
 var import_client = __toModule(require_src());
 var authToken = process.env.NOTION_TOKEN;
-var databaseId = "847f71096748427f8d5844de8dc828dd";
+var hourTrackerId = "847f71096748427f8d5844de8dc828dd";
 var notion = new import_client.Client({ auth: authToken });
-var handler = async (event, context) => {
-  let targetDate = new Date();
-  const weekAgo = targetDate.getDate() - 7;
-  targetDate.setDate(weekAgo);
-  const stuff = await notion.databases.query({
-    database_id: databaseId
+var handler = async () => {
+  const pagesResponse = await notion.databases.query({
+    database_id: hourTrackerId,
+    filter: {
+      or: [
+        {
+          property: "Date",
+          date: {
+            past_week: {}
+          }
+        }
+      ]
+    }
   });
+  const pastWeeksEntries = await Promise.all(pagesResponse.results.map(async (result) => {
+    const { id } = result;
+    const { results } = await notion.blocks.children.list({
+      block_id: id
+    });
+    return results;
+  }));
   return {
     statusCode: 200,
-    body: JSON.stringify(stuff, null, 2)
+    body: JSON.stringify(pastWeeksEntries, null, 2)
   };
 };
 // Annotate the CommonJS export names for ESM import in node:
