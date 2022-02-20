@@ -120,4 +120,4 @@ const handler: Handler = async () => {
   };
 };
 
-module.exports.handler = schedule("0 9 * * SUN", handler);
+module.exports.handler = schedule("0 17 * * SUN", handler);
