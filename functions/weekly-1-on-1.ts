@@ -1,4 +1,5 @@
-import { Handler, schedule } from "@netlify/functions";
+// import { Handler, schedule } from "@netlify/functions";
+import { Handler } from "@netlify/functions";
 import { Client } from "@notionhq/client";
 
 const authToken = process.env.NOTION_TOKEN;
@@ -120,4 +121,5 @@ const handler: Handler = async () => {
   };
 };
 
-module.exports.handler = schedule("0 17 * * SUN", handler);
+// module.exports.handler = schedule("0 17 * * SUN", handler);
+module.exports = handler;
