@@ -1,9 +1,12 @@
 import { Handler } from '@netlify/functions'
 import { Client } from '@notionhq/client'
+import fetch from 'node-fetch'
 
 const authToken = process.env.NOTION_TOKEN
+const waveAppsUserId = process.env.WAVE_APPS_USER_ID
+const waveAppsEndpoint = process.env.WAVE_APPS_API_ENDPOINT
+const waveAppsFullAccesToken = process.env.WAVE_APPS_FULL_ACCESS_TOKEN
 const hourTrackerId = '847f71096748427f8d5844de8dc828dd'
-const oneOnOneId = '43268142d5e04ac090aa86f14c1cba1d'
 const notion = new Client({ auth: authToken })
 
 const monday = new Date()
@@ -58,65 +61,39 @@ const handler: Handler = async () => {
 
   const pastWeeksEntries = entriesArray.flat()
 
-  // Create new page in ROC 1:1s
-  notion.pages.create({
-    parent: {
-      database_id: oneOnOneId
+  let data = await fetch(waveAppsEndpoint, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${waveAppsFullAccesToken}`,
+      'Content-Type': 'application/json'
     },
-    properties: {
-      Name: {
-        title: [
-          {
-            text: {
-              content: monday.toLocaleDateString('en-GB')
+    body: JSON.stringify({
+      query: `
+        mutation CreateInvoice($businessId: ID!, $customerId: ID!) {
+          invoiceCreate(
+            input: { businessId: $businessId, customerId: $customerId }
+          ) {
+            invoice {
+              id
+            }
+            didSucceed
+            inputErrors {
+              path
+              message
             }
           }
-        ]
+        }
+      `,
+      variables: {
+        businessId: '92e460fa-be94-4c6c-87b8-7aeed3cb0930',
+        customerId: '62221045'
       }
-    },
-    children: [
-      {
-        type: 'heading_2',
-        heading_2: {
-          text: [
-            {
-              text: {
-                content: 'Last Week'
-              }
-            }
-          ]
-        }
-      },
-      ...pastWeeksEntries,
-      {
-        type: 'heading_2',
-        heading_2: {
-          text: [
-            {
-              text: {
-                content: 'This Week'
-              }
-            }
-          ]
-        }
-      },
-      {
-        bulleted_list_item: {
-          text: [
-            {
-              text: {
-                content: ' '
-              }
-            }
-          ]
-        }
-      }
-    ]
-  })
+    })
+  }).then(res => res.json())
 
   return {
     statusCode: 200,
-    body: JSON.stringify(pastWeeksEntries, null, 2)
+    body: JSON.stringify(data, null, 2)
   }
 }
 
