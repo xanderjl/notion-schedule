@@ -4,4 +4,4 @@
 
 [functions.weekly-1-on-1]
 
-  schedule = '0 17 * * SUN'
+  # schedule = '0 17 * * SUN'
