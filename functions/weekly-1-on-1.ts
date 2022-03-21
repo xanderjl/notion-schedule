@@ -14,7 +14,7 @@ const handler: Handler = async () => {
   const pagesResponse = await notion.databases.query({
     database_id: hourTrackerId,
     filter: {
-      or: [
+      and: [
         {
           property: 'Date',
           date: {
